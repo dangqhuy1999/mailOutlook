@@ -13,21 +13,29 @@ try:
         # Truy cập thư mục inbox
         inbox = namespace.GetDefaultFolder(6)
         messages = inbox.Items
+        lenMes1 = len(messages)
         print(len(messages))
-        with open ('messageCount.txt','w' ) as file:
-            file.write(str(len(messages)))
-        list_mail = []
-        for message in messages:
-            list_mail.append((message.Subject, message.SenderName, message.ReceivedTime))
-        list_mail.sort(key=lambda x: x[2],reverse=True)
-        # In ra danh sách đã sắp xếp
-        i=0
-        for subject, sender, received_time in list_mail:
-            if i>2:
-                break
-            print(f"Chủ đề: {subject}, Người gửi: {sender}, Thời gian nhận: {received_time}")
-            i+=1
-        time.sleep(15)
+        with open('messageCount.txt', 'r', encoding='utf-8') as file:
+            lenMes2 = int(file.read())
+            print(f"{lenMes2}, {lenMes1}")
+        if lenMes2< lenMes1:
+            sub = lenMes1 - lenMes2
+            print(f"sub: {sub}")
+            with open ('messageCount.txt','w' ) as file:
+                file.write(str(lenMes1))
+            list_mail = []
+            for message in messages:
+                list_mail.append((message.Subject, message.SenderEmailAddress , message.ReceivedTime))
+            list_mail.sort(key=lambda x: x[2],reverse=True)
+            # In ra danh sách đã sắp xếp
+            i=0
+            for subject, sender, received_time in list_mail:
+                if i>=sub:
+                    break
+                print(f"Chủ đề: {subject}, Người gửi: {sender}, Thời gian nhận: {received_time}")
+                i+=1
+        time.sleep(60)
+        
 except Exception as e:
     print(f"Đã xảy ra lỗi: {e}")
 
