@@ -3,66 +3,33 @@ from datetime import datetime
 import time
 
 try:
-    # Tạo một instance của Outlook
-    outlook = client.Dispatch("Outlook.Application")
-    namespace = outlook.GetNamespace("MAPI")
-    
-    # Truy cập thư mục inbox
-    inbox = namespace.GetDefaultFolder(6)  # 6 là ID cho Inbox
-    messages = inbox.Items
 
-    # Tạo danh sách để lưu trữ email và thời gian nhận
-    email_list = []
-
-    # Lặp qua tất cả các email và thêm vào danh sách
-    for message in messages:
-        email_list.append((message.Subject, message.SenderName, message.ReceivedTime))
-    
-    # Sắp xếp danh sách theo thời gian nhận (thứ tự tăng dần)
-    email_list.sort(key=lambda x: x[2], reverse=True)  # Sắp xếp theo thời gian nhận
-    mailList_1 = len(messages)
-    cosoi = 5
-
-    listmail=0
-    # In ra danh sách đã sắp xếp
-    for subject, sender, received_time in email_list:
-        if listmail ==cosoi:
-            break
-        print(f"Chủ đề: {subject}, Người gửi: {sender}, Thời gian nhận: {received_time}")
-        listmail+=1
     while True:
-        time.sleep(15)
+        
         # Tạo một instance của Outlook
         outlook = client.Dispatch("Outlook.Application")
         namespace = outlook.GetNamespace("MAPI")
-    
+        namespace.SendAndReceive(False)
         # Truy cập thư mục inbox
         inbox = namespace.GetDefaultFolder(6)
         messages = inbox.Items
-        mailList_2 = len(messages) 
-        if mailList_2 > mailList_1:
-            cosoi = mailList_2 - mailList_1
-
-            # Tạo danh sách để lưu trữ email và thời gian nhận
-            email_list = []
-
-            # Lặp qua tất cả các email và thêm vào danh sách
-            for message in messages:
-                email_list.append((message.Subject, message.SenderName, message.ReceivedTime))
-    
-            # Sắp xếp danh sách theo thời gian nhận (thứ tự tăng dần)
-            email_list.sort(key=lambda x: x[2], reverse=True)  # Sắp xếp theo thời gian nhận
-            listmail=0
-            # In ra danh sách đã sắp xếp
-            for subject, sender, received_time in email_list:
-                if listmail ==cosoi:
-                    break
-                print(f"Chủ đề: {subject}, Người gửi: {sender}, Thời gian nhận: {received_time}")
-                listmail+=1
-
+        print(len(messages))
+        with open ('messageCount.txt','w' ) as file:
+            file.write(str(len(messages)))
+        list_mail = []
+        for message in messages:
+            list_mail.append((message.Subject, message.SenderName, message.ReceivedTime))
+        list_mail.sort(key=lambda x: x[2],reverse=True)
+        # In ra danh sách đã sắp xếp
+        i=0
+        for subject, sender, received_time in list_mail:
+            if i>2:
+                break
+            print(f"Chủ đề: {subject}, Người gửi: {sender}, Thời gian nhận: {received_time}")
+            i+=1
+        time.sleep(15)
 except Exception as e:
     print(f"Đã xảy ra lỗi: {e}")
-
 
 """
 #tìm theo Subject
@@ -71,15 +38,12 @@ import win32com.client as client
 try:
     # Tạo một instance của Outlook
     outlook = client.Dispatch("Outlook.Application")
-    namespace = outlook.GetNamespace("MAPI")
-    
+    namespace = outlook.GetNamespace("MAPI")    
     # Truy cập thư mục inbox
     inbox = namespace.GetDefaultFolder(6)  # 6 là ID cho Inbox
     messages = inbox.Items
-
     # Chuỗi cần tìm kiếm
     search_string = "CÔNG TY CỔ PHẦN CÔNG NGHỆ TIN HỌC ANH NGỌC gửi hóa đơn điện tử số 00011583 cho CÔNG TY TNHH CENNOS ASIA"
-
     # Lặp qua tất cả email trong inbox
     found = False
     iter = 0
@@ -89,13 +53,10 @@ try:
             found = True
             print(f"Found in email: {message.Subject}, From: {message.SenderName}, Received: {message.ReceivedTime}, STT: {iter}")
         iter+=1
-
     if not found:
         print("Không tìm thấy email nào chứa chuỗi tìm kiếm.")
-
 except Exception as e:
     print(f"Đã xảy ra lỗi: {e}")
-
 
 import win32com.client as client
 from datetime import datetime
