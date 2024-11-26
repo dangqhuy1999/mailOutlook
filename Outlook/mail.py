@@ -1,11 +1,53 @@
+from abc import ABC, abstractmethod
+
+class AppWin(ABC):
+  def __init__(self, appName,api):
+    self._appName=appName
+    self._api=api
+  @abstractmethod
+  def openNewApp(self):
+    pass
+
+import win32com.client as client
+import time
+
+class Outlook(AppWin):
+  def __init__(self,appName, api, folderName):
+    super().__init__(appName,api)
+    self._folderName = folderName
+    self.outlook = None
+  def openNewApp(self):
+    self.outlook = client.Dispatch(self._appName)
+    namespace = self.outlook.GetNamespace(self._api)
+    namespace.SendAndReceive(False)
+    if self._folderName=="Inbox":
+      self._folderNum = 6
+      folder = namespace.GetDefaultFolder(self._folderNum)
+    else:
+      folder = namespace.GetDefaultFolder(5)
+    return folder
+  def quitOutlook(self):
+    if self.outlook:
+      self.outlook.Quit()
+      print('Quit OK!')
+if __name__ == "__main__":  
+  outlookapp = Outlook("Outlook.Application", "MAPI", "Inbox")
+  inbox = outlookapp.openNewApp()
+  messages = inbox.Items
+  print(len(messages))
+  outlookapp.quitOutlook()
+
+
+
+
+
+"""
 import win32com.client as client
 from datetime import datetime
 import time
 
 try:
-
     while True:
-        
         # Tạo một instance của Outlook
         outlook = client.Dispatch("Outlook.Application")
         namespace = outlook.GetNamespace("MAPI")
@@ -34,12 +76,12 @@ try:
                     break
                 print(f"Chủ đề: {subject}, Người gửi: {sender}, Thời gian nhận: {received_time}")
                 i+=1
-        time.sleep(60)
+        time.sleep(30)
         
 except Exception as e:
     print(f"Đã xảy ra lỗi: {e}")
 
-"""
+
 #tìm theo Subject
 import win32com.client as client
 
